@@ -1,7 +1,10 @@
 package com.example.overflow;
 
+import android.os.Build;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.widget.TextView;
 
@@ -20,12 +23,14 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
 
     final String url = "http://35.247.146.48:3000/questions";
+    public ArrayList<String> questions = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,12 +38,25 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         RequestQueue queue = Volley.newRequestQueue(this);
 
-        final TextView textView = findViewById(R.id.textview);
         JsonArrayRequest jsonObjectRequest = new JsonArrayRequest(Request.Method.GET, url, new Response.Listener<JSONArray>() {
             @Override
             public void onResponse(JSONArray response) {
-                Log.d("as", "onResponse: " + response.toString());
-                textView.setText(response.toString());
+                for (int i = 0; i < response.length(); i++) {
+                    try {
+                        JSONObject question = response.getJSONObject(i);
+                        Log.i("WOI", question.optString("title"));
+                        questions.add(question.optString("title"));
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+                RecyclerView recyclerView = findViewById(R.id.recyclerView);
+                RecyclerViewAdapter adapter = new RecyclerViewAdapter(questions, getApplicationContext());
+                recyclerView.setAdapter(adapter);
+                recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+
+                Log.i("INI QUESTIONS", String.valueOf(questions));
+
             }
         }, new Response.ErrorListener() {
             @Override
