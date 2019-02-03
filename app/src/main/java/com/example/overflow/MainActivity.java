@@ -31,6 +31,8 @@ public class MainActivity extends AppCompatActivity {
 
     final String url = "http://35.247.146.48:3000/questions";
     public ArrayList<String> questions = new ArrayList<>();
+    public ArrayList<String> upvotes = new ArrayList<>();
+    public ArrayList<String> downvotes = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,14 +46,17 @@ public class MainActivity extends AppCompatActivity {
                 for (int i = 0; i < response.length(); i++) {
                     try {
                         JSONObject question = response.getJSONObject(i);
-                        Log.i("WOI", question.optString("title"));
+                        Log.i("WOI", String.valueOf(question));
                         questions.add(question.optString("title"));
+                        upvotes.add(question.optString("upvotes"));
+                        downvotes.add(question.optString("downvotes"));
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
                 }
+                Log.i("INI UPVOTES", "onResponse: " + upvotes);
                 RecyclerView recyclerView = findViewById(R.id.recyclerView);
-                RecyclerViewAdapter adapter = new RecyclerViewAdapter(questions, getApplicationContext());
+                RecyclerViewAdapter adapter = new RecyclerViewAdapter(questions,upvotes, downvotes, getApplicationContext());
                 recyclerView.setAdapter(adapter);
                 recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
 

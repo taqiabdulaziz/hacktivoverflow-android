@@ -10,16 +10,21 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.ViewHolder> {
 
     private static final String TAG = "RecyclerViewAdapter";
-    private ArrayList<String> questionList = new ArrayList<>();
+    public ArrayList<String> questionList = new ArrayList<>();
+    public ArrayList<String> upvotes = new ArrayList<>();
+    public ArrayList<String> downvotes = new ArrayList<>();
     private Context context;
 
-    public RecyclerViewAdapter(ArrayList<String> questionList, Context context) {
-        this.questionList = questionList;
+    public RecyclerViewAdapter(ArrayList<String> questions, ArrayList<String> upvotes, ArrayList<String> downvotes, Context context) {
+        this.questionList = questions;
+        this.upvotes = upvotes;
+        this.downvotes = downvotes;
         this.context = context;
     }
 
@@ -28,22 +33,21 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
         LayoutInflater layoutInflater = null;
         View view = layoutInflater.from(context).inflate(R.layout.item, viewGroup, false);
-        view.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-            }
-        });
         ViewHolder holder = new ViewHolder(view);
 
         return holder;
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder viewHolder, int i) {
+    public void onBindViewHolder(@NonNull final ViewHolder viewHolder, int i) {
         viewHolder.username.setText(questionList.get(i));
-
-
+        viewHolder.votes.setText("Votes: " + upvotes.get(i));
+        viewHolder.username.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(context, questionList.get(viewHolder.getAdapterPosition()), Toast.LENGTH_SHORT).show();
+            }
+        });
 
     }
 
@@ -52,26 +56,16 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         return questionList.size();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
+    public class ViewHolder extends RecyclerView.ViewHolder{
 
-        TextView username,password;
+        TextView username,votes;
         RelativeLayout parentLayout;
-        ItemClickListener itemClickListener;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             username = itemView.findViewById(R.id.tvTitle);
+            votes = itemView.findViewById(R.id.tvVotes);
             parentLayout = itemView.findViewById(R.id.parent_layout);
-        }
-
-
-        @Override
-        public void onClick(View v) {
-            this.itemClickListener.onItemClick(this.getLayoutPosition());
-        }
-        void setItemClickListener(ItemClickListener itemClickListener)
-        {
-            this.itemClickListener=itemClickListener;
         }
     }
 }
